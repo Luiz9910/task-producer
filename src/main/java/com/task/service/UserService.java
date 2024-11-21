@@ -1,6 +1,8 @@
 package com.task.service;
 
 import com.task.dto.request.UserDTO;
+import com.task.dto.request.UserUpdateDTO;
+import com.task.dto.response.UserResponseDTO;
 import com.task.exception.BadRequestException;
 import com.task.exception.ConflictException;
 import com.task.exception.NotFoundException;
@@ -9,19 +11,18 @@ import com.task.repository.TaskRepository;
 import com.task.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    @Autowired
-    private KafkaTemplate<String, Serializable> kafkaTemplate;
+    private final KafkaTemplate<String, Serializable> kafkaTemplate;
 
     private final ModelMapper mapper = new ModelMapper();
 
@@ -29,8 +30,11 @@ public class UserService {
 
     private final TaskRepository taskRepository;
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(user -> mapper.map(user, UserResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     public UserDTO createUser(UserDTO userDTO) {
@@ -56,5 +60,15 @@ public class UserService {
         }
 
         kafkaTemplate.send("userDelete-topic", id);
+    }
+
+    public UserDTO updateUser(UserUpdateDTO userUpdateDTO) {
+        userRepository.findById(userUpdateDTO.getId())
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+
+        User user = mapper.map(userUpdateDTO, User.class);
+        kafkaTemplate.send("userUpdate-topic", user);
+
+        return mapper.map(userUpdateDTO, UserDTO.class);
     }
 }

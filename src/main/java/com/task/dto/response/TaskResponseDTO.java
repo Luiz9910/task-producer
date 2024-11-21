@@ -1,14 +1,19 @@
 package com.task.dto.response;
 
-import com.task.dto.request.TaskDTO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+import java.util.Date;
+
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaskResponseDTO {
-    private String message;
-    private TaskDTO taskDTO;
+    private Integer id;
+    private String title;
+    private String description;
+    private String status;
+    private Date createdDate;
+    private Date limitDate;
+    private Integer userId;
 }
