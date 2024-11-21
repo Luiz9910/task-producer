@@ -1,0 +1,78 @@
+version: '3'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    networks:
+      - broker-kafka
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    networks:
+      - broker-kafka
+      - app-network  # Adicionado à rede app-network
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"  # Expondo a porta correta do Kafka para fora
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_NAME_DEFAULT: PLAINTEXT
+      KAFKA_LISTENER_PORT_DEFAULT: 9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    networks:
+      - broker-kafka
+      - app-network  # Adicionado à rede app-network
+    depends_on:
+      - kafka
+    ports:
+      - "19000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: kafka:29092
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: task  # Este é o usuário que será criado
+      POSTGRES_PASSWORD: task  # Senha para o usuário 'task'
+      POSTGRES_DB: task  # Banco de dados 'task' será criado automaticamente
+    ports:
+      - "5432:5432"  # Certifique-se de que a porta seja mapeada se precisar de acesso externo
+    volumes:
+      - postgres-data:/var/lib/postgresql/data # Dados persistentes
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8081:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - app-network
+
+volumes:
+  postgres-data:
+  pgadmin-data:
+
+networks:
+  app-network:
+  broker-kafka:
+    driver: bridge
