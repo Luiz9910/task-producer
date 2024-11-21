@@ -6,21 +6,31 @@ import com.task.dto.response.TaskResponseDTO;
 import com.task.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("task")
 public class TaskController {
-    private final TaskService taskService;
+    @Autowired
+    private TaskService taskService;
 
     @GetMapping("tasks")
     public ResponseEntity<List<TaskResponseDTO>> getAllTasks() {
-        return new ResponseEntity<>(taskService.getAllTask() , HttpStatus.CREATED);
+        return new ResponseEntity<>(taskService.getAllTask() , HttpStatus.OK);
+    }
+
+    @GetMapping("filter")
+    public ResponseEntity<List<TaskResponseDTO>> getFilteredTasks(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer userId) {
+
+        List<TaskResponseDTO> tasks = taskService.getFilteredTasks(status, userId);
+        return ResponseEntity.ok(tasks);
     }
 
     @PostMapping
@@ -31,12 +41,12 @@ public class TaskController {
 
     @PutMapping
     public ResponseEntity<TaskDTO> updateTask(@Valid @RequestBody TaskUpdateDTO taskUpdateDTO) {
-        return new ResponseEntity<>(taskService.updateTask(taskUpdateDTO), HttpStatus.OK);
+        return ResponseEntity.ok(taskService.updateTask(taskUpdateDTO));
     }
 
     @DeleteMapping("{taskId}")
     public ResponseEntity<String> deleteTask(@PathVariable Integer taskId) {
         taskService.deleteTask(taskId);
-        return new ResponseEntity<>("Tarefa deletada com sucesso!", HttpStatus.OK);
+        return ResponseEntity.ok("Tarefa deletada com sucesso!");
     }
 }

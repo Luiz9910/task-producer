@@ -30,7 +30,7 @@ public class Task implements Serializable {
     private String description;
 
     @Column(name = "tp_status", nullable = false, length = 1)
-    private char status;
+    private String status;
 
     @Column(name = "dt_created", nullable = false)
     @Temporal(TemporalType.DATE)
