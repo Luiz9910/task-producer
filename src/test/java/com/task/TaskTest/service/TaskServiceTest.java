@@ -16,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -79,7 +80,7 @@ class TaskServiceTest {
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
         task.setStatus(taskDTO.getStatus());
-        task.setLimitDate(taskDTO.getLimitDate());
+        task.setLimitDate(new Date());
 
         when(userService.ensureUserExists(1)).thenReturn(null);
 

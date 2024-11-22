@@ -9,6 +9,7 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
@@ -48,7 +49,7 @@ class TaskDTOTest {
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
         task.setStatus(taskDTO.getStatus());
-        task.setLimitDate(taskDTO.getLimitDate());
+        task.setLimitDate(new Date());
         task.setCreatedDate(new Date());
 
         assertEquals(taskDTO.getUserId(), task.getUserId());

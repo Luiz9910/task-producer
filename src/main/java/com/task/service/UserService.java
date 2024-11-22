@@ -93,6 +93,5 @@ public class UserService {
         if (userUpdateDTO.getEmail() == null) {
             user.setEmail(userExisting.getEmail());
         }
-
     }
 }

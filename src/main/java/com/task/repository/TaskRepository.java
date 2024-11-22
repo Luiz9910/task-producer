@@ -12,7 +12,7 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Integer> {
 
     @Query(nativeQuery = true, value = "SELECT * FROM DBATK.TB_TASKS WHERE CD_USER = ?")
-    Task findByCdUser(@Param("id") Integer id);
+    List<Task> findByCdUser(@Param("id") Integer id);
 
     List<Task> findByStatusAndUserId(String status, Integer userId);
 

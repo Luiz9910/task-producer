@@ -1,5 +1,6 @@
 package com.task.dto.request;
 
+import com.task.validation.yearValidation.YearValidator;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -28,6 +30,7 @@ public class TaskDTO {
     @Pattern(regexp = "^(P|C|A)$", message = "O status deve ser um dos seguintes: P, C, A")
     private String status;
 
+    @YearValidator(message = "Data limite inválida. Deve ser de hoje em diante")
     private Date limitDate;
 
     @NotNull(message = "O ID do usuário não pode ser nulo")

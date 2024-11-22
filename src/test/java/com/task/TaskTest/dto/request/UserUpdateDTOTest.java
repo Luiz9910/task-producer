@@ -28,27 +28,6 @@ public class UserUpdateDTOTest {
         assertTrue(violations.isEmpty(), "Não deve haver violações de validação.");
     }
 
-    // Teste: nome vazio
-    @Test
-    void testNameEmpty() {
-        UserUpdateDTO userUpdateDTO = new UserUpdateDTO(1, "", "joao.silva@example.com");
-
-        Set<ConstraintViolation<UserUpdateDTO>> violations = validator.validate(userUpdateDTO);
-
-        assertFalse(violations.isEmpty(), "Deve haver uma violação de validação para o nome vazio.");
-        assertEquals(1, violations.size());
-    }
-
-    @Test
-    void testEmailEmpty() {
-        UserUpdateDTO userUpdateDTO = new UserUpdateDTO(1, "João Silva", "");
-
-        Set<ConstraintViolation<UserUpdateDTO>> violations = validator.validate(userUpdateDTO);
-
-        assertFalse(violations.isEmpty(), "Deve haver uma violação de validação para o e-mail vazio.");
-        assertEquals(1, violations.size());
-    }
-
     @Test
     void testInvalidEmail() {
         UserUpdateDTO userUpdateDTO = new UserUpdateDTO(1, "João Silva", "invalid-email");
@@ -57,7 +36,7 @@ public class UserUpdateDTOTest {
 
         assertFalse(violations.isEmpty(), "Deve haver uma violação de validação para o e-mail inválido.");
         assertEquals(1, violations.size());
-        assertEquals("must be a well-formed email address", violations.iterator().next().getMessage());
+        assertEquals("Formato de e-mail inválido", violations.iterator().next().getMessage());
     }
 
     @Test

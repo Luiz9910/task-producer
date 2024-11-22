@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
 import java.io.Serializable;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +39,10 @@ public class TaskService {
         userService.ensureUserExists(taskDTO.getUserId());
 
         Task task = mapper.map(taskDTO, Task.class);
+        if (task.getLimitDate() != null) {
+            task.setLimitDate(Date.from(task.getLimitDate().toInstant().atZone(ZoneId.systemDefault()).toInstant()));
+        }
+
         task.setCreatedDate(new Date());
 
         kafkaTemplate.send("taskCreate-topic", task);

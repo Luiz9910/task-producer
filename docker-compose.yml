@@ -1,5 +1,39 @@
 version: '3'
 services:
+  app:
+    build: .
+    restart: always
+    ports:
+      - "9090:9090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/task
+      SPRING_DATASOURCE_USERNAME: task
+      SPRING_DATASOURCE_PASSWORD: task
+      SPRING_KAFKA_BOOTSTRAP-SERVERS: kafka:29092
+    depends_on:
+      - db
+      - kafka
+      - kafdrop
+      - zookeeper
+    networks:
+      - app-network
+      - broker-kafka
+
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: task
+      POSTGRES_PASSWORD: task
+      POSTGRES_DB: task
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     networks:
@@ -12,11 +46,11 @@ services:
     image: confluentinc/cp-kafka:latest
     networks:
       - broker-kafka
-      - app-network  # Adicionado à rede app-network
+      - app-network
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"  # Expondo a porta correta do Kafka para fora
+      - "9092:9092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -31,7 +65,7 @@ services:
     image: obsidiandynamics/kafdrop:latest
     networks:
       - broker-kafka
-      - app-network  # Adicionado à rede app-network
+      - app-network
     depends_on:
       - kafka
     ports:
@@ -39,40 +73,11 @@ services:
     environment:
       KAFKA_BROKERCONNECT: kafka:29092
 
-  db:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: task  # Este é o usuário que será criado
-      POSTGRES_PASSWORD: task  # Senha para o usuário 'task'
-      POSTGRES_DB: task  # Banco de dados 'task' será criado automaticamente
-    ports:
-      - "5432:5432"  # Certifique-se de que a porta seja mapeada se precisar de acesso externo
-    volumes:
-      - postgres-data:/var/lib/postgresql/data # Dados persistentes
-    networks:
-      - app-network
-
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    restart: always
-    depends_on:
-      - db
-    ports:
-      - "8081:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    networks:
-      - app-network
-
 volumes:
   postgres-data:
-  pgadmin-data:
 
 networks:
   app-network:
+    driver: bridge
   broker-kafka:
     driver: bridge

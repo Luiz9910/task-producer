@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,11 +44,26 @@ class TaskRepositoryTest {
 
     @Test
     void testFindByCdUser() {
-        when(taskRepository.findByCdUser(100)).thenReturn(task1);
+        List<Task> tasks = new ArrayList<>();
+        Task task1 = new Task();
+        task1.setTitle("Tarefa 1");
+        task1.setDescription("Descrição da Tarefa 1");
+        task1.setUserId(100);
 
-        Task result = taskRepository.findByCdUser(100);
+        Task task2 = new Task();
+        task2.setTitle("Tarefa 2");
+        task2.setDescription("Descrição da Tarefa 2");
+        task2.setUserId(100);
+
+        tasks.add(task1);
+        tasks.add(task2);
+
+
+        when(taskRepository.findByCdUser(100)).thenReturn(tasks);
+
+        List<Task> result = taskRepository.findByCdUser(100);
         assertNotNull(result);
-        assertEquals("Task 1", result.getTitle());
+        assertEquals("Task 1", result.get(0).getTitle());
     }
 
     @Test
@@ -90,7 +106,7 @@ class TaskRepositoryTest {
     void testFindByCdUserNotFound() {
         when(taskRepository.findByCdUser(999)).thenReturn(null);
 
-        Task result = taskRepository.findByCdUser(999);
+        List<Task> result = taskRepository.findByCdUser(999);
         assertNull(result);
     }
 

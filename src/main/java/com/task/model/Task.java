@@ -1,16 +1,13 @@
 package com.task.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -33,11 +30,9 @@ public class Task implements Serializable {
     private String status;
 
     @Column(name = "dt_created", nullable = false)
-    @Temporal(TemporalType.DATE)
     private Date createdDate;
 
     @Column(name = "dt_limit")
-    @Temporal(TemporalType.DATE)
     private Date limitDate;
 
     @Column(name = "cd_user")
