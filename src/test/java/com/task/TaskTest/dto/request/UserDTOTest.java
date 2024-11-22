@@ -26,7 +26,6 @@ public class UserDTOTest {
 
         Set<ConstraintViolation<UserDTO>> violations = validator.validate(userDTO);
 
-        // Não deve haver violações de validação
         assertTrue(violations.isEmpty(), "Não deve haver violações de validação.");
     }
 

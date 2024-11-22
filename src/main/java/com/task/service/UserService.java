@@ -80,7 +80,7 @@ public class UserService {
     }
 
     public void ensureUserHasNoAssignedTasks(Integer userId) {
-        if (taskRepository.findByCdUser(userId) != null) {
+        if (!taskRepository.findByCdUser(userId).isEmpty()) {
             throw new BadRequestException("O usuário não pode ser deletado pois ainda tem tarefas associadas a ele");
         }
     }
