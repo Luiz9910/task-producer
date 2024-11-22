@@ -10,7 +10,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
-                .info(new Info().title("Taks")
+                .info(new Info().title("Task")
                         .description("Relacionamento de tarefas associados a usuários")
                         .version("1.0"));
     }
